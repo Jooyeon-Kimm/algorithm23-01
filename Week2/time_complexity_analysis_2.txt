@@ -1,0 +1,22 @@
+#include <bits/stdc++.h>
+#include <cmath>
+using namespace std;
+
+typedef long long long_t;
+
+long_t logB(long_t x, long_t base) {
+  return log(x) / log(base);
+}
+
+long_t fun(long_t n, long_t m, long_t p) {
+    long_t cnt = 0;
+  	cnt = (logB(4*p, 2) + 1) * (logB(2*m, 2) + 1) * ceil((float)n/2);
+  
+    return cnt;
+}
+
+int main() {
+    long_t n, m, p;
+    scanf("%lld %lld %lld", &n, &m, &p);
+    printf("%lld", fun(n, m, p));
+}

@@ -1,0 +1,20 @@
+#include <bits/stdc++.h>
+#include <cmath>
+using namespace std;
+
+typedef long long long_t;
+
+long_t logB(long_t x, long_t base) {
+	return log(x)/log(base);
+}
+
+long_t fun(long_t n) {
+  double answer = pow(4, logB(n, 2) + 1);
+  return (long_t)answer;
+}
+
+int main() {
+    long_t n;
+    scanf("%lld", &n);
+    printf("%lld", fun(n));
+}

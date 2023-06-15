@@ -1,0 +1,162 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int n, m, T, cnt = 0;
+vector<int> row, col, vindex;
+vector<bool> visited;
+vector<bool> W;
+
+int dx[] = { -2, -1, 1, 2, 2, 1, -1, -2 };
+int dy[] = { 1, 2, 2, 1, -1, -2, -2, -1 };
+
+void hamiltonian(int i);
+bool promising(int i);
+int KnightTour(int pos, int count);
+
+int main() {
+    cin >> n >> m;
+    cin >> T;
+    row.resize(T);
+    col.resize(T);
+    visited.resize(n * m, false);
+
+    for (int i = 0; i < T; i++)
+        cin >> row[i] >> col[i];
+
+    vindex.resize(n * m);
+    W.resize(n * m * n * m, false);
+
+    for (int i = 0; i < n * m; i++) {
+        int x = i / m;
+        int y = i % m;
+
+        for (int j = 0; j < 8; j++) {
+            int nx = x + dx[j];
+            int ny = y + dy[j];
+
+            if (nx >= 0 && nx < n && ny >= 0 && ny < m) {
+                int nextVertex = nx * m + ny;
+                W[i * n * m + nextVertex] = true;
+                W[nextVertex * n * m + i] = true;
+            }
+        }
+    }
+
+    vindex[0] = 0;
+    hamiltonian(0);
+    cout << cnt << "\n";
+
+    for (int i = 0; i < T; i++) {
+        int pos = row[i] * m + col[i];
+        visited[pos] = true;
+        cout << KnightTour(pos, 1) << "\n";
+        visited[pos] = false;
+    }
+
+    return 0;
+}
+
+void hamiltonian(int i) {
+    int j;
+
+    if (promising(i)) {
+        if (i == n * m - 1)
+            cnt++;
+        else {
+            for (j = 1; j < n * m; j++) {
+                vindex[i + 1] = j;
+                hamiltonian(i + 1);
+            }
+        }
+    }
+}
+
+bool promising(int i) {
+    if (i == n * m - 1 && !W[vindex[n * m - 1] * n * m + vindex[0]])
+        return false;
+    else if (i > 0 && !W[vindex[i - 1] * n * m + vindex[i]])
+        return false;
+    else {
+        for (int j = 1; j < i; j++) {
+            if (vindex[i] == vindex[j])
+                return false;
+        }
+    }
+    return true;
+}
+
+int KnightTour(int pos, int count) {
+    if (count == n * m)
+        return 1;
+
+    int pCnt = 0;
+    for (int i = 0; i < 8; i++) {
+        int nRow = pos / m + dx[i];
+        int nCol = pos % m + dy[i];
+        int nPos = nRow * m + nCol;
+
+        if (nRow >= 0 && nRow < n && nCol >= 0 && nCol < m && !visited[nPos]) {
+            visited[nPos] = true;
+            pCnt += KnightTour(nPos, count + 1);
+            visited[nPos] = false;
+        }
+    }
+    return pCnt;
+}
+
+
+/*
+Description
+
+n by m 체스보드에서 기사의 여행 문제를 해결하는 백트래킹 알고리즘을 구현하시오.
+
+
+
+Knight's Tour 문제는 해밀턴 경로(path)와 해밀턴 회로(circuit, cycle)를 찾는 문제로 구분할 수 있다.
+
+해밀턴 회로는 출발 정점과 무관하게 회로의 수를 구할 수 있고,
+
+해밀턴 경로는 출발 정점에 따라 가능한 경로의 수가 달라짐에 유의하시오.
+
+
+Input
+첫 번째 줄에 체스보드의 크기 n(행의 크기)과 m(열의 크기)이 주어진다.
+
+두 번째 줄에 출발정점의 개수 T가 주어진다.
+
+이후로 T개의 출발정점이 i(row), j(col) 의 쌍으로 주어진다.
+
+
+Output
+첫 번째 줄에 해밀턴 회로의 개수를 출력한다.
+
+두 번째 줄부터 입력에서 주어진 출발정점 각각에 대해 해밀턴 경로의 수를 한 줄에 하나씩 출력한다.
+
+
+Sample Input 1
+
+3 4
+3
+0 0
+0 1
+1 0
+Sample Output 1
+
+0
+2
+0
+4
+Sample Input 2
+
+3 10
+2
+0 0
+1 1
+Sample Output 2
+
+32
+448
+416
+*/
